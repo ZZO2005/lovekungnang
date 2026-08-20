@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกความทรงจำใต้ท้องฟ้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 2s ease, color 1s ease;
+            position: relative;
+            padding-bottom: 50px;
+        }
+
+        body.day-sky {
+            background: linear-gradient(to bottom, #70c4ff 0%, #bde3ff 60%, #e8f5ff 100%);
+            color: #2c3e50;
+        }
+
+        body.sunset-sky {
+            background: linear-gradient(to bottom, #2b1055 0%, #75225b 40%, #b54552 70%, #f67280 100%);
+            color: #ffffff;
+        }
+
+        body.night-sky {
+            background: linear-gradient(to bottom, #090a0f 0%, #111e38 50%, #1a2a4a 100%);
+            color: #f0f4f8;
+        }
+
+        .sky-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .celestial-body {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            transition: all 1s ease;
+        }
+
+        .sun {
+            background: radial-gradient(circle, #fff7d1 30%, #ffae00 100%);
+            box-shadow: 0 0 40px #ffae00, 0 0 80px #ffa000;
+            animation: pulse-sun 4s infinite alternate ease-in-out;
+        }
+
+        .moon {
+            background: radial-gradient(circle, #ffffff 60%, #dbe3eb 100%);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 255, 255, 0.4);
+            animation: pulse-moon 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-sun {
+            0% { transform: scale(1); box-shadow: 0 0 30px #ffae00; }
+            100% { transform: scale(1.08); box-shadow: 0 0 60px #ffae00, 0 0 90px #ffa000; }
+        }
+
+        @keyframes pulse-moon {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.7); }
+            100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 255, 255, 0.9); }
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50px;
+            animation: float-cloud linear infinite;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.05));
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+
+        .cloud1 { width: 140px; height: 45px; top: 12%; animation-duration: 35s; }
+        .cloud1::before { width: 50px; height: 50px; top: -20px; left: 20px; }
+        .cloud1::after { width: 70px; height: 70px; top: -35px; left: 50px; }
+
+        .cloud2 { width: 200px; height: 60px; top: 25%; animation-duration: 50s; animation-delay: -15s; opacity: 0.7; }
+        .cloud2::before { width: 70px; height: 70px; top: -30px; left: 30px; }
+        .cloud2::after { width: 90px; height: 90px; top: -45px; left: 80px; }
+
+        @keyframes float-cloud {
+            0% { left: -250px; }
+            100% { left: 100vw; }
+        }
+
+        .bird {
+            position: absolute;
+            width: 20px;
+            height: 12px;
+            animation: fly-bird linear infinite;
+        }
+
+        .bird::before, .bird::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 12px;
+            height: 8px;
+            border-top: 2px solid #2c3e50;
+            border-radius: 50% 50% 0 0;
+        }
+        .bird::before { left: 0; transform: rotate(-20deg); animation: wing-left 0.4s infinite alternate; }
+        .bird::after { right: 0; transform: rotate(20deg); animation: wing-right 0.4s infinite alternate; }
+
+        @keyframes wing-left { 0% { transform: rotate(-20deg); } 100% { transform: rotate(30deg); } }
+        @keyframes wing-right { 0% { transform: rotate(20deg); } 100% { transform: rotate(-30deg); } }
+
+        @keyframes fly-bird {
+            0% { left: -50px; transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+            100% { left: 100vw; transform: translateY(10px); }
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .firefly {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ccff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ccff00, 0 0 20px #ccff00;
+            animation: float-firefly 6s infinite ease-in-out alternate;
+        }
+
+        @keyframes float-firefly {
+            0% { transform: translate(0, 0) scale(0.8); opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { transform: translate(60px, -80px) scale(1.2); opacity: 0.2; }
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        body.night-sky .glass-card {
+            background: rgba(20, 30, 55, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-family: 'Mali', cursive;
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        .timer-badge {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body.night-sky .timer-badge {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .timer-badge h3 {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .timer-badge p {
+            font-family: 'Mali', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff5722;
+        }
+
+        body.night-sky .timer-badge p {
+            color: #ffeb3b;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input[type="datetime-local"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: white;
+            font-family: 'Mali', cursive;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 126, 95, 0.6);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feed-title {
+            font-family: 'Mali', cursive;
+            text-align: center;
+            margin: 30px 0 20px;
+            font-size: 22px;
+        }
+
+        .polaroid-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            padding: 16px 16px 24px 16px;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2), 0 2px 5px rgba(0,0,0,0.1);
+            transform: rotate(-1.5deg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #333;
+            position: relative;
+        }
+
+        .polaroid-card:nth-child(even) {
+            transform: rotate(1.5deg);
+        }
+
+        .polaroid-card:hover {
+            transform: rotate(0deg) scale(1.03);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .polaroid-img-frame {
+            width: 100%;
+            height: 280px;
+            background: #000;
+            overflow: hidden;
+            border: 1px solid #eee;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .polaroid-img-frame img,
+        .polaroid-img-frame video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .polaroid-caption {
+            margin-top: 15px;
+            padding: 0 5px;
+        }
+
+        .polaroid-text {
+            font-family: 'Mali', cursive;
+            font-size: 16px;
+            color: #2c3e50;
+            line-height: 1.5;
+            word-break: break-word;
+            margin-bottom: 12px;
+        }
+
+        .polaroid-date-badge {
+            font-size: 12px;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px dashed #eee;
+            padding-top: 8px;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 12;
+        }
+
+        .polaroid-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.15);
+        }
+
+        .btn-edit { color: #2196F3; }
+        .btn-delete { color: #f44336; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            font-family: 'Mali', cursive;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .main-wrapper { padding: 12px; }
+            .polaroid-img-frame { height: 220px; }
+            .celestial-body { width: 60px; height: 60px; right: 20px; top: 20px; }
+        }
+    </style>
+</head>
+<body class="day-sky">
+
+    <div class="sky-elements" id="skyElements">
+        <div id="celestial" class="celestial-body sun"></div>
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="glass-card">
+            <h1 id="formTitle">✨ บันทึกความทรงจำ</h1>
+
+            <div class="timer-badge">
+                <h3>เวลาที่ผ่านไปนับตั้งแต่วันที่ 28 มิถุนายน 2568:</h3>
+                <p id="timer">กำลังโหลดเวลา...</p>
+            </div>
+
+            <form id="memoryForm">
+                <input type="hidden" id="editIndex" value="-1">
+
+                <div class="form-group">
+                    <label for="dateInput">📅 เลือกวันที่และเวลา</label>
+                    <input type="datetime-local" id="dateInput" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageInput">🎥 เลือกรูปภาพ GIF หรือวิดีโอ</label>
+                    <input type="file" id="imageInput" accept="image/*,video/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="descriptionInput">📝 คำอธิบายความทรงจำ</label>
+                    <textarea id="descriptionInput" placeholder="พิมพ์ความทรงจำที่นี่..." required></textarea>
+                </div>
+
+                <button id="submitBtn" class="btn-submit" type="button" onclick="sendData()">📌 บันทึกลงไดอารี่</button>
+            </form>
+        </div>
+
+        <h2 class="feed-title">🖼️ แกลเลอรีความทรงจำ</h2>
+        <div class="polaroid-feed" id="polaroidFeed">
+            <div class="empty-state" id="emptyState">ยังไม่มีสื่อความทรงจำ<br>ลองเพิ่มรูปภาพ GIF หรือวิดีโอแรกของคุณดูสิ!</div>
+        </div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxdkHenbgvqNbMv3bILVnB3bm4PrhFVTnEp5DHZmfgdPltMlq6iBpW6eoEO2Jg78UGe/exec";
+        const startDate = new Date('2025-06-28T00:00:00');
+
+        let memoryList = JSON.parse(localStorage.getItem('sky_memories') || '[]');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateSkyTheme();
+            setInterval(updateSkyTheme, 60000);
+            setInterval(updateTimer, 1000);
+            updateTimer();
+            renderFeed();
+        });
+
+        function updateSkyTheme() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            const skyContainer = document.getElementById('skyElements');
+            const celestial = document.getElementById('celestial');
+
+            document.querySelectorAll('.bird, .star, .firefly').forEach(e => e.remove());
+
+            if (hour >= 6 && hour < 17) {
+                body.className = 'day-sky';
+                celestial.className = 'celestial-body sun';
+
+                for (let i = 0; i < 3; i++) {
+                    let bird = document.createElement('div');
+                    bird.className = 'bird';
+                    bird.style.top = (15 + i * 8) + '%';
+                    bird.style.animationDuration = (18 + i * 5) + 's';
+                    bird.style.animationDelay = (i * 4) + 's';
+                    skyContainer.appendChild(bird);
+                }
+            } else if (hour >= 17 && hour < 19) {
+                body.className = 'sunset-sky';
+                celestial.className = 'celestial-body sun';
+            } else {
+                body.className = 'night-sky';
+                celestial.className = 'celestial-body moon';
+
+                for (let i = 0; i < 35; i++) {
+                    let star = document.createElement('div');
+                    star.className = 'star';
+                    let size = Math.random() * 3 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.top = Math.random() * 80 + '%';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    skyContainer.appendChild(star);
+                }
+
+                for (let i = 0; i < 12; i++) {
+                    let firefly = document.createElement('div');
+                    firefly.className = 'firefly';
+                    firefly.style.top = (50 + Math.random() * 45) + '%';
+                    firefly.style.left = Math.random() * 90 + '%';
+                    firefly.style.animationDuration = (4 + Math.random() * 4) + 's';
+                    firefly.style.animationDelay = (Math.random() * 3) + 's';
+                    skyContainer.appendChild(firefly);
+                }
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const diffInMs = now - startDate;
+
+            if (diffInMs < 0) {
+                document.getElementById('timer').innerText = "ยังไม่ถึงวันที่กำหนด";
+                return;
+            }
+
+            const seconds = Math.floor((diffInMs / 1000) % 60);
+            const minutes = Math.floor((diffInMs / (1000 * 60)) % 60);
+            const hours = Math.floor((diffInMs / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+            document.getElementById('timer').innerText = 
+                `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+        }
+
+        function renderFeed() {
+            const feed = document.getElementById('polaroidFeed');
+            const emptyState = document.getElementById('emptyState');
+
+            if (memoryList.length === 0) {
+                emptyState.style.display = 'block';
+                feed.innerHTML = '';
+                feed.appendChild(emptyState);
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            feed.innerHTML = '';
+
+            memoryList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'polaroid-card';
+
+                const formattedDate = new Date(item.date).toLocaleString('th-TH', {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                // ตรวจสอบประเภทสื่อเพื่อ Render แท็ก HTML ให้ถูกต้อง
+                let mediaTag = '';
+                const mediaType = item.mediaType || (item.image && item.image.startsWith('data:video') ? 'video' : 'image');
+
+                if (mediaType === 'video' || (item.image && item.image.startsWith('data:video'))) {
+                    mediaTag = `<video src="${item.image}" controls loop muted playsinline></video>`;
+                } else {
+                    mediaTag = `<img src="${item.image || 'https://via.placeholder.com/400x300?text=No+Media'}" alt="Polaroid Memory">`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-actions">
+                        <button class="btn-action btn-edit" title="แก้ไข" onclick="editMemory(${index})">✏️</button>
+                        <button class="btn-action btn-delete" title="ลบ" onclick="deleteMemory(${index})">🗑️</button>
+                    </div>
+                    <div class="polaroid-img-frame">
+                        ${mediaTag}
+                    </div>
+                    <div class="polaroid-caption">
+                        <div class="polaroid-text">${escapeHtml(item.description)}</div>
+                        <div class="polaroid-date-badge">
+                            <span>📅 ${formattedDate}</span>
+                        </div>
+                    </div>
+                `;
+                feed.appendChild(card);
+            });
+        }
+
+        async function sendData() {
+            const dateInput = document.getElementById('dateInput').value;
+            const descriptionInput = document.getElementById('descriptionInput').value;
+            const fileInput = document.getElementById('imageInput').files[0];
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+
+            if (!dateInput || !descriptionInput) {
+                alert('กรุณากรอกวันที่และคำอธิบายให้ครบถ้วนครับ');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "กำลังบันทึกข้อมูล...";
+
+            let imageData = editIndex >= 0 ? memoryList[editIndex].image : null;
+            let imageName = "";
+            let imageType = "";
+            let mediaType = editIndex >= 0 ? (memoryList[editIndex].mediaType || 'image') : 'image';
+
+            if (fileInput) {
+                imageData = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(fileInput);
+                });
+                imageName = fileInput.name;
+                imageType = fileInput.type;
+                mediaType = fileInput.type.startsWith('video/') ? 'video' : 'image';
+            }
+
+            const memoryData = {
+                date: dateInput,
+                description: descriptionInput,
+                image: imageData,
+                mediaType: mediaType
+            };
+
+            if (editIndex >= 0) {
+                memoryList[editIndex] = memoryData;
+            } else {
+                memoryList.unshift(memoryData);
+            }
+
+            localStorage.setItem('sky_memories', JSON.stringify(memoryList));
+            renderFeed();
+
+            const payload = {
+                date: dateInput,
+                description: descriptionInput,
+                image: imageData,
+                imageName: imageName,
+                imageType: imageType,
+                mediaType: mediaType,
+                action: editIndex >= 0 ? 'UPDATE' : 'CREATE'
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                alert(editIndex >= 0 ? 'แก้ไขข้อมูลเรียบร้อยแล้ว!' : 'ส่งข้อมูลลงชีทเรียบร้อยแล้ว!');
+                resetForm();
+            } catch (error) {
+                alert('บันทึกในเครื่องแล้ว แต่เกิดข้อผิดพลาดในการส่งลง Google Sheets');
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📌 บันทึกลงไดอารี่";
+            }
+        }
+
+        function editMemory(index) {
+            const item = memoryList[index];
+            document.getElementById('dateInput').value = item.date;
+            document.getElementById('descriptionInput').value = item.description;
+            document.getElementById('editIndex').value = index;
+
+            document.getElementById('formTitle').innerText = "✏️ แก้ไขความทรงจำ";
+            document.getElementById('submitBtn').innerText = "🔄 อัปเดตข้อมูล";
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteMemory(index) {
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์ความทรงจำนี้?")) {
+                memoryList.splice(index, 1);
+                localStorage.setItem('sky_memories', JSON.stringify(memoryList));
+                renderFeed();
+                if (document.getElementById('editIndex').value == index) {
+                    resetForm();
+                }
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('memoryForm').reset();
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('formTitle').innerText = "✨ บันทึกความทรงจำ";
+            document.getElementById('submitBtn').innerText = "📌 บันทึกลงไดอารี่";
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
